@@ -21,3 +21,6 @@ runs/
 wandb/
 mlruns/
 EOF
+# Large data / models (not tracked)
+data/
+models/
