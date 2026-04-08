@@ -1,0 +1,5 @@
+{
+  "preprocess_name": "discrete_atom_bond_v2",
+  "smiles_canonicalize": true,
+  "rdkit_sanitize": true
+}

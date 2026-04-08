@@ -3,6 +3,10 @@ __pycache__/
 *.pyc
 *.pyo
 
+# Cursor&GitHub Copilot
+.cursor/
+.github/
+
 # Jupyter
 .ipynb_checkpoints/
 
@@ -20,7 +24,25 @@ outputs/
 runs/
 wandb/
 mlruns/
-EOF
-# Large data / models (not tracked)
-data/
-models/
+
+# data: NREL / zinc / Deep4Chem の「置き場」だけ共有（.gitkeep のみ追跡。CSV 等は各自配置）
+data/NREL/**
+!data/NREL/.gitkeep
+data/zinc/**
+!data/zinc/.gitkeep
+data/Deep4Chem/**
+!data/Deep4Chem/.gitkeep
+
+# ---- models/ は追跡する（predict_gui 用 checkpoint.pt / AD の md_*.npy など）----
+# 推論・gnn_infer では読まない AD 関連の巨大ファイルのみ除外
+**/G_train.npy
+**/md_train.npy
+**/train_smiles_ok.csv
+**/train_smiles_bad.csv
+
+# predict_gui は ZINC/NREL のみ参照。Deep4Chem 用の学習成果は別用途
+models/deep4chem_*/
+
+# 作業中の notebook（公開不要）
+**/NREL_multi_task_mpnn_optuna.ipynb
+to_do_list

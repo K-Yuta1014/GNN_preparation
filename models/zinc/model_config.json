@@ -1,0 +1,13 @@
+{
+  "model_name": "mpnn_edgecond_gru",
+  "hidden_dim": 128,
+  "num_layers": 3,
+  "dropout": 0.0,
+  "fp_dim": 1024,
+  "num_targets": 3,
+  "target_cols": [
+    "logP",
+    "qed",
+    "SAS"
+  ]
+}

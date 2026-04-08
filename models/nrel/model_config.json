@@ -1,0 +1,18 @@
+{
+  "model_name": "mpnn_edgecond_gru",
+  "hidden_dim": 128,
+  "num_layers": 3,
+  "dropout": 0.0,
+  "fp_dim": 1024,
+  "num_targets": 8,
+  "target_cols": [
+    "gap",
+    "homo",
+    "lumo",
+    "spectral_overlap",
+    "homo_extrapolated",
+    "lumo_extrapolated",
+    "gap_extrapolated",
+    "optical_lumo_extrapolated"
+  ]
+}

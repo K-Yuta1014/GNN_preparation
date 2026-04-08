@@ -3,12 +3,9 @@ channels:
   - conda-forge
 dependencies:
   - python=3.9
-  - numpy=1.26.4
   - rdkit
   - pandas
   - scikit-learn
   - matplotlib
   - jupyter
   - pip
-  - pip:
-      - selfies
