@@ -222,33 +222,33 @@ $$
 
     (a) `Message`（エッジごと）
 
-    $$
+$$
     m_{ij} = W_{bond\_type} \cdot h_j^{(l)}
-    $$
+$$
 
     - 結合タイプ（single or double etc.）ごとに異なる行列を使用
     - shape:  
-    $$
+$$
     m_{ij} \in \mathbb{R}^{E \times 128}
-    $$
+$$
 
     (b) `Aggregate`（ノードごと）
 
-    $$
+$$
     m_i = \sum_{j \in \mathcal{N}(i)} m_{ij}
-    $$
+$$
 
     - 隣接ノードからのメッセージを加算  
     - shape:  
-    $$
+$$
     m_i \in \mathbb{R}^{N \times 128}
-    $$
+$$
 
     (c) `Update`（GRU）
 
-    $$
+$$
     h_i^{(l+1)} = \mathrm{GRUCell}(m_i,\; h_i^{(l)})
-    $$
+$$
 
     - message（新情報）と previous state（過去情報）を統合
 
@@ -261,21 +261,21 @@ $$
 $$
 
 6. Global sum pooling によりグラフ表現へ変換
-   $$
+$$
    g \in \mathbb{R}^{B \times 128}
-   $$
+$$
 
 7. MLP Head（回帰）
 
-    $$
+$$
     1024 \rightarrow 512 \rightarrow 256 \rightarrow num\_targets
-    $$
+$$
 
     最終出力：
 
-    $$
+$$
     y \in \mathbb{R}^{B \times T}
-    $$
+$$
 
 ### ■ GCN（Graph Convolutional Network）
 #### 「グラフのつながり」を重視する、標準的で軽量なモデル
@@ -302,9 +302,9 @@ $$
     - **Aggregate Neighborhood** `Σ_j (...)`
 
     式で表すと↓となる
-    $$
+$$
     h_i^{(l+1)} = \sum_{j \in \mathcal{N}(i)} \frac{1}{\sqrt{d_i d_j}} W h_j^{(l)}
-    $$
+$$
 3. ReRU, Dropoutに通す
 4. これを num_layers 回繰り返す（例：3回）
 5. 最終ノード表現
@@ -313,19 +313,19 @@ $$
 $$
 
 6. Global sum pooling によりグラフ表現へ変換
-   $$
+$$
    g \in \mathbb{R}^{B \times 128}
-   $$
+$$
 7. MLP Head（回帰）
-    $$
+$$
     128 \rightarrow 512 \rightarrow 256 \rightarrow num\_targets
-    $$
+$$
 
     最終出力：
 
-    $$
+$$
     y \in \mathbb{R}^{B \times T}
-    $$
+$$
 
 ### ■ ScheNet
 #### 「3次元的な距離」を重視する、量子化学寄りのモデル
@@ -364,34 +364,34 @@ $$
     - 距離に基づく連続フィルタでメッセージを計算、隣接原子からのメッセージを集約する
 
     概念的には
-    $$
+$$
     m_{ij} = f(r_{ij}) \odot h_j^{(l)}
-    $$
+$$
 
-    $$
+$$
     m_i = \sum_{j \in \mathcal{N}(i)} m_{ij}
-    $$
+$$
     の様に、距離依存の重み付きメッセージを作る
 
 4. Update (残差接続): 集約メッセージ `m` を現在の自己状態 `h` に足し合わせ（残差）、活性化関数に通して更新
 
-    $$h^{(l+1)} = h^{(l)} + \text{MLP}(m_{i}^{(l)})$$
+$$h^{(l+1)} = h^{(l)} + \text{MLP}(m_{i}^{(l)})$$
 5. これを`num_iteractions`繰り返す
 6. 最終ノード表現
-    $$\hat{h} = h^{(M)} \in \mathbb{R}^{N \times 128}$$
+$$\hat{h} = h^{(M)} \in \mathbb{R}^{N \times 128}$$
 7. Graph poolingによりグラフ表現に変換、今回は`global_mean_pool`なので、
-    $$g = \text{global\_mean\_pool}(\hat{h}) \in \mathbb{R}^{B \times 128}$$
+$$g = \text{global\_mean\_pool}(\hat{h}) \in \mathbb{R}^{B \times 128}$$
     となる
 8. MLP Head（回帰）
-    $$
+$$
     128 \rightarrow 512 \rightarrow 256 \rightarrow num\_targets
-    $$
+$$
 
     最終出力：
 
-    $$
+$$
     y \in \mathbb{R}^{B \times T}
-    $$
+$$
 
 ## 引用
 - **Message-passing neural networks for high-throughput polymer screening**

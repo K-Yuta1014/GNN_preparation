@@ -188,7 +188,7 @@ On the **NREL** dataset we implemented and compared three GNNs. The reference pa
 ![alt text](docs/image/MPNN_gemini.jpg)
 
 - **Inputs:** Discrete features (atomic number, degree, etc.) embedded and concatenated.
-- **Messages:** Bond-type-specific weight matrices \(W_{\text{bond\_type}}\) (single, double, …).
+- **Messages:** Bond-type-specific weight matrices $W_{\text{bond\_type}}$ (single, double, …).
 - **Update:** GRU—combines past state with new messages like a recurrent cell.
 - **Aggregation:** Sum of neighbor messages.
 - **Readout:** Nodes lifted from 128D to 1024D before pooling—rich molecular fingerprints.
@@ -220,20 +220,20 @@ $$
 4. **Message passing** (M layers): each layer:
    - (a) **Message** (per edge):  
      $$m_{ij} = W_{\text{bond\_type}} \cdot h_j^{(l)}$$  
-     \(m_{ij} \in \mathbb{R}^{E \times 128}\)
+     $m_{ij} \in \mathbb{R}^{E \times 128}$
    - (b) **Aggregate** (per node):  
      $$m_i = \sum_{j \in \mathcal{N}(i)} m_{ij}$$  
-     \(m_i \in \mathbb{R}^{N \times 128}\)
+     $m_i \in \mathbb{R}^{N \times 128}$
    - (c) **Update** (GRU):  
      $$h_i^{(l+1)} = \mathrm{GRUCell}(m_i,\; h_i^{(l)})$$
 
-5. Final node representation: \(\hat{h} = h^{(M)} \in \mathbb{R}^{N \times 128}\)
+5. Final node representation: $\hat{h} = h^{(M)} \in \mathbb{R}^{N \times 128}$
 
-6. **Global sum pooling** → graph vector \(g \in \mathbb{R}^{B \times 128}\)
+6. **Global sum pooling** → graph vector $g \in \mathbb{R}^{B \times 128}$
 
 7. **MLP head (regression):**  
-   \(1024 \rightarrow 512 \rightarrow 256 \rightarrow \text{num\_targets}\)  
-   Output: \(y \in \mathbb{R}^{B \times T}\)
+   $1024 \rightarrow 512 \rightarrow 256 \rightarrow \text{num\_targets}$  
+   Output: $y \in \mathbb{R}^{B \times T}$
 
 ### GCN (Graph Convolutional Network)
 
@@ -242,8 +242,8 @@ $$
 ![alt text](docs/image/GCN_gemini.jpg)
 
 - **Inputs:** Same 5 discrete embeddings as MPNN; **edge_attr (bond type) is not used** in the convolution.
-- **Messages:** Single shared weight \(W\) for all edges.
-- **Normalization:** Scale by \(\frac{1}{\sqrt{d_i d_j}}\) to limit oversmoothing.
+- **Messages:** Single shared weight $W$ for all edges.
+- **Normalization:** Scale by $\frac{1}{\sqrt{d_i d_j}}$ to limit oversmoothing.
 - **Update:** Linear + ReLU—no GRU-style memory.
 - **Readout:** `global_add_pool` at 128D; MLP expands dimensions.
 
@@ -252,9 +252,9 @@ $$
 0. Same embeddings as MPNN up to concatenation; **GCN ignores `edge_attr`.**
 
 1. Map 104D → 128D:  
-   \(h^{(0)} = \text{Linear}(h) \in \mathbb{R}^{N \times 128}\)
+   $h^{(0)} = \text{Linear}(h) \in \mathbb{R}^{N \times 128}$
 
-2. GCNConv on \((h, \text{edge\_index})\): neighborhood of \(j\), linear \(W h_j\), normalize by \(1/\sqrt{d_i d_j}\), aggregate \(\sum_j\):
+2. GCNConv on $(h, \text{edge\_index})$: neighborhood of $j$, linear $W h_j$, normalize by $1/\sqrt{d_i d_j}$, aggregate $\sum_j$:
 
 $$
 h_i^{(l+1)} = \sum_{j \in \mathcal{N}(i)} \frac{1}{\sqrt{d_i d_j}} W h_j^{(l)}
@@ -262,9 +262,9 @@ $$
 
 3. ReLU, dropout (typical).
 4. Repeat for `num_layers` (e.g. 3).
-5. \(\hat{h} = h^{(M)} \in \mathbb{R}^{N \times 128}\)
-6. Global sum pooling → \(g \in \mathbb{R}^{B \times 128}\)
-7. MLP: \(128 \rightarrow 512 \rightarrow 256 \rightarrow \text{num\_targets}\), output \(y \in \mathbb{R}^{B \times T}\)
+5. $\hat{h} = h^{(M)} \in \mathbb{R}^{N \times 128}$
+6. Global sum pooling → $g \in \mathbb{R}^{B \times 128}$
+7. MLP: $128 \rightarrow 512 \rightarrow 256 \rightarrow \text{num\_targets}$, output $y \in \mathbb{R}^{B \times T}$
 
 ### SchNet
 
@@ -272,9 +272,9 @@ $$
 
 ![alt text](docs/image/schnet_gemini.jpg)
 
-- **Inputs:** Atomic numbers \(z\) and 3D positions `pos` only—no discrete chemoinformatics features like MPNN/GCN.
+- **Inputs:** Atomic numbers $z$ and 3D positions `pos` only—no discrete chemoinformatics features like MPNN/GCN.
 - **Messages (CFConv):** Gaussian-expanded distances fed through MLPs → continuous, distance-dependent filter weights.
-- **Update:** Residual connections—add aggregated messages to \(h\).
+- **Update:** Residual connections—add aggregated messages to $h$.
 - **Activation:** Shifted Softplus (not ReLU) for smooth physical behavior.
 - **Readout:** Default `global_mean_pool`—size-normalized graph features.
 
@@ -282,7 +282,7 @@ $$
 
 0. From mol blocks: `z`, `pos`; no hand-crafted discrete node features.
 
-1. Embed \(z\) → \(h^{(0)} = \text{Embedding}(z) \in \mathbb{R}^{N \times 128}\)
+1. Embed $z$ → $h^{(0)} = \text{Embedding}(z) \in \mathbb{R}^{N \times 128}$
 
 2. Build a neighborhood graph from `pos`:
    - `edge_index`, `edge_weight` (distances), `edge_attr` (Gaussian expansion)
@@ -292,7 +292,7 @@ $$
    edge_attr = self.distance_expansion(edge_weight)
    ```
 
-3. SchNet interaction blocks take \((h^{(l)}, \text{edge\_index}, \text{edge\_weight}, \text{edge\_attr})\).
+3. SchNet interaction blocks take $(h^{(l)}, \text{edge\_index}, \text{edge\_weight}, \text{edge\_attr})$.
 
    Conceptually:
 
@@ -301,16 +301,16 @@ m_{ij} = f(r_{ij}) \odot h_j^{(l)}, \quad
 m_i = \sum_{j \in \mathcal{N}(i)} m_{ij}
 $$
 
-4. Residual update: \(h^{(l+1)} = h^{(l)} + \text{MLP}(m_i^{(l)})\)
+4. Residual update: $h^{(l+1)} = h^{(l)} + \text{MLP}(m_i^{(l)})$
 
 5. Repeat for `num_interactions` layers.
 
-6. \(\hat{h} = h^{(M)} \in \mathbb{R}^{N \times 128}\)
+6. $\hat{h} = h^{(M)} \in \mathbb{R}^{N \times 128}$
 
 7. Pooling (here `global_mean_pool`):  
-   \(g = \text{global\_mean\_pool}(\hat{h}) \in \mathbb{R}^{B \times 128}\)
+   $g = \text{global\_mean\_pool}(\hat{h}) \in \mathbb{R}^{B \times 128}$
 
-8. MLP: \(128 \rightarrow 512 \rightarrow 256 \rightarrow \text{num\_targets}\), output \(y \in \mathbb{R}^{B \times T}\)
+8. MLP: $128 \rightarrow 512 \rightarrow 256 \rightarrow \text{num\_targets}$, output $y \in \mathbb{R}^{B \times T}$
 
 ## References
 
