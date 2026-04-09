@@ -106,9 +106,9 @@ For each GNN model, an **Applicability Domain (AD)** is defined from the distrib
 - For an input molecule, an **AD score** is computed using the **Mahalanobis distance** in the GNN latent space.
 - The AD score is defined as
 
-```math
+$$
 \text{AD score (\%)} = \frac{\text{distance}}{\text{threshold}} \times 100
-```
+$$
 
 **Interpretation**
 
@@ -208,39 +208,39 @@ On the **NREL** dataset we implemented and compared three GNNs. The reference pa
    - Formal charge → 8D  
    - Hybridization → 8D  
 
-   ```math
-   h \in \mathbb{R}^{N \times 104}
-   ```
+$$
+h \in \mathbb{R}^{N \times 104}
+$$
 
 3. Linear layer → hidden state **128D**:
 
-   ```math
-   h^{(0)} = \text{Linear}(h) \in \mathbb{R}^{N \times 128}
-   ```
+$$
+h^{(0)} = \text{Linear}(h) \in \mathbb{R}^{N \times 128}
+$$
 
 4. **Message passing** (M layers): each layer:
 
    - (a) **Message** (per edge):
 
-     ```math
-     m_{ij} = W_{\text{bond\_type}} \cdot h_j^{(l)}
-     ```
+$$
+m_{ij} = W_{\text{bond\_type}} \cdot h_j^{(l)}
+$$
 
      $m_{ij} \in \mathbb{R}^{E \times 128}$
 
    - (b) **Aggregate** (per node):
 
-     ```math
-     m_i = \sum_{j \in \mathcal{N}(i)} m_{ij}
-     ```
+$$
+m_i = \sum_{j \in \mathcal{N}(i)} m_{ij}
+$$
 
      $m_i \in \mathbb{R}^{N \times 128}$
 
    - (c) **Update** (GRU):
 
-     ```math
-     h_i^{(l+1)} = \mathrm{GRUCell}(m_i,\; h_i^{(l)})
-     ```
+$$
+h_i^{(l+1)} = \mathrm{GRUCell}(m_i,\; h_i^{(l)})
+$$
 
 5. Final node representation: $\hat{h} = h^{(M)} \in \mathbb{R}^{N \times 128}$
 
@@ -271,9 +271,9 @@ On the **NREL** dataset we implemented and compared three GNNs. The reference pa
 
 2. GCNConv on $(h, \text{edge\_index})$: neighborhood of $j$, linear $W h_j$, normalize by $1/\sqrt{d_i d_j}$, aggregate $\sum_j$:
 
-```math
+$$
 h_i^{(l+1)} = \sum_{j \in \mathcal{N}(i)} \frac{1}{\sqrt{d_i d_j}} W h_j^{(l)}
-```
+$$
 
 3. ReLU, dropout (typical).
 4. Repeat for `num_layers` (e.g. 3).
@@ -311,10 +311,10 @@ h_i^{(l+1)} = \sum_{j \in \mathcal{N}(i)} \frac{1}{\sqrt{d_i d_j}} W h_j^{(l)}
 
    Conceptually:
 
-```math
+$$
 m_{ij} = f(r_{ij}) \odot h_j^{(l)}, \quad
 m_i = \sum_{j \in \mathcal{N}(i)} m_{ij}
-```
+$$
 
 4. Residual update: $h^{(l+1)} = h^{(l)} + \text{MLP}(m_i^{(l)})$
 
