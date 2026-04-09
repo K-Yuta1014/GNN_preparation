@@ -98,9 +98,9 @@ python -m src.predict_gui
 
 - AD score は次式で定義されます。
 
-$$
+```math
 \text{AD score (\%)} = \frac{\text{distance}}{\text{threshold}} \times 100
-$$
+```
 
 解釈は以下の通りです。
 
@@ -206,77 +206,78 @@ NRELデータセットに関しては、3つのGNNモデルを実装し比較し
     - Formal Charge → 8D  
     - Hybridization → 8D  
 
-$$
-h \in \mathbb{R}^{N \times 104}
-$$
+   ```math
+   h \in \mathbb{R}^{N \times 104}
+   ```
 
 3. Linear層で隠れ状態を生成し、128Dに
 
-$$
-h^{(0)} = \text{Linear}(h)
-\in \mathbb{R}^{N \times 128}
-$$
+   ```math
+   h^{(0)} = \text{Linear}(h)
+   \in \mathbb{R}^{N \times 128}
+   ```
 
-4. Message Passing（M回繰り返し）
-各層で以下を実行：
+4. Message Passing（M回繰り返し）— 各層で以下を実行：
 
-    (a) `Message`（エッジごと）
+   - (a) `Message`（エッジごと）
 
-$$
-    m_{ij} = W_{bond\_type} \cdot h_j^{(l)}
-$$
+     ```math
+     m_{ij} = W_{\text{bond\_type}} \cdot h_j^{(l)}
+     ```
 
-    - 結合タイプ（single or double etc.）ごとに異なる行列を使用
-    - shape:  
-$$
-    m_{ij} \in \mathbb{R}^{E \times 128}
-$$
+     - 結合タイプ（single or double etc.）ごとに異なる行列を使用
+     - shape:
 
-    (b) `Aggregate`（ノードごと）
+     ```math
+     m_{ij} \in \mathbb{R}^{E \times 128}
+     ```
 
-$$
-    m_i = \sum_{j \in \mathcal{N}(i)} m_{ij}
-$$
+   - (b) `Aggregate`（ノードごと）
 
-    - 隣接ノードからのメッセージを加算  
-    - shape:  
-$$
-    m_i \in \mathbb{R}^{N \times 128}
-$$
+     ```math
+     m_i = \sum_{j \in \mathcal{N}(i)} m_{ij}
+     ```
 
-    (c) `Update`（GRU）
+     - 隣接ノードからのメッセージを加算
+     - shape:
 
-$$
-    h_i^{(l+1)} = \mathrm{GRUCell}(m_i,\; h_i^{(l)})
-$$
+     ```math
+     m_i \in \mathbb{R}^{N \times 128}
+     ```
 
-    - message（新情報）と previous state（過去情報）を統合
+   - (c) `Update`（GRU）
+
+     ```math
+     h_i^{(l+1)} = \mathrm{GRUCell}(m_i,\; h_i^{(l)})
+     ```
+
+     - message（新情報）と previous state（過去情報）を統合
 
 <br>
 
 5. 最終ノード表現
 
-$$
+```math
 \hat{h} = h^{(M)} \in \mathbb{R}^{N \times 128}
-$$
+```
 
 6. Global sum pooling によりグラフ表現へ変換
-$$
-   g \in \mathbb{R}^{B \times 128}
-$$
+
+```math
+g \in \mathbb{R}^{B \times 128}
+```
 
 7. MLP Head（回帰）
 
-$$
-    1024 \rightarrow 512 \rightarrow 256 \rightarrow num\_targets
-$$
+```math
+1024 \rightarrow 512 \rightarrow 256 \rightarrow num\_targets
+```
 
-    最終出力：
+最終出力：
 
-$$
-    y \in \mathbb{R}^{B \times T}
-$$
-
+```math
+y \in \mathbb{R}^{B \times T}
+```
 ### ■ GCN（Graph Convolutional Network）
 #### 「グラフのつながり」を重視する、標準的で軽量なモデル
 ![alt text](docs/image/GCN_gemini.jpg)
@@ -290,11 +291,13 @@ $$
 
 0. 埋め込みまではMPNNと同じ、但し、GCNの場合、edge_attrは使用しない
 
-1. 104Dの特徴を128Dに変換し、初期状態 `h^(0)` を生成  
-$$
+1. 104Dの特徴を128Dに変換し、初期状態 `h^(0)` を生成
+
+```math
 h^{(0)} = \text{Linear}(h)
 \in \mathbb{R}^{N \times 128}
-$$
+```
+
 2. GCN Conv に（h, edge_index）を入力
     - `edge_index`から`隣接ノードj`を取得（**Neighborhood**取得）
     - 線形変換 `W h_j`
@@ -302,30 +305,36 @@ $$
     - **Aggregate Neighborhood** `Σ_j (...)`
 
     式で表すと↓となる
-$$
-    h_i^{(l+1)} = \sum_{j \in \mathcal{N}(i)} \frac{1}{\sqrt{d_i d_j}} W h_j^{(l)}
-$$
+
+```math
+h_i^{(l+1)} = \sum_{j \in \mathcal{N}(i)} \frac{1}{\sqrt{d_i d_j}} W h_j^{(l)}
+```
+
 3. ReRU, Dropoutに通す
 4. これを num_layers 回繰り返す（例：3回）
 5. 最終ノード表現
-$$
+
+```math
 \hat{h} = h^{(M)} \in \mathbb{R}^{N \times 128}
-$$
+```
 
 6. Global sum pooling によりグラフ表現へ変換
-$$
-   g \in \mathbb{R}^{B \times 128}
-$$
+
+```math
+g \in \mathbb{R}^{B \times 128}
+```
+
 7. MLP Head（回帰）
-$$
-    128 \rightarrow 512 \rightarrow 256 \rightarrow num\_targets
-$$
 
-    最終出力：
+```math
+128 \rightarrow 512 \rightarrow 256 \rightarrow num\_targets
+```
 
-$$
-    y \in \mathbb{R}^{B \times T}
-$$
+最終出力：
+
+```math
+y \in \mathbb{R}^{B \times T}
+```
 
 ### ■ ScheNet
 #### 「3次元的な距離」を重視する、量子化学寄りのモデル
@@ -340,11 +349,12 @@ $$
 
 0. 入力: mol blockから `z` (原子番号) と `pos` (3D座標) を取得。GCN/MPNNのような多種の離散特徴量は使用しない。
 
-1. 原子番号 `z` を Embedding し、初期状態 `h^(0)` を生成  
-$$
+1. 原子番号 `z` を Embedding し、初期状態 `h^(0)` を生成
+
+```math
 h^{(0)} = \text{Embedding}(z)
 \in \mathbb{R}^{N \times 128}
-$$
+```
 
 2. 原子座標 `pos` から近接グラフを構築する
    - `edge_index`: 原子間の近接関係
@@ -364,35 +374,47 @@ $$
     - 距離に基づく連続フィルタでメッセージを計算、隣接原子からのメッセージを集約する
 
     概念的には
-$$
-    m_{ij} = f(r_{ij}) \odot h_j^{(l)}
-$$
 
-$$
-    m_i = \sum_{j \in \mathcal{N}(i)} m_{ij}
-$$
+```math
+m_{ij} = f(r_{ij}) \odot h_j^{(l)}, \quad
+m_i = \sum_{j \in \mathcal{N}(i)} m_{ij}
+```
+
     の様に、距離依存の重み付きメッセージを作る
 
 4. Update (残差接続): 集約メッセージ `m` を現在の自己状態 `h` に足し合わせ（残差）、活性化関数に通して更新
 
-$$h^{(l+1)} = h^{(l)} + \text{MLP}(m_{i}^{(l)})$$
+```math
+h^{(l+1)} = h^{(l)} + \text{MLP}(m_{i}^{(l)})
+```
+
 5. これを`num_iteractions`繰り返す
+
 6. 最終ノード表現
-$$\hat{h} = h^{(M)} \in \mathbb{R}^{N \times 128}$$
+
+```math
+\hat{h} = h^{(M)} \in \mathbb{R}^{N \times 128}
+```
+
 7. Graph poolingによりグラフ表現に変換、今回は`global_mean_pool`なので、
-$$g = \text{global\_mean\_pool}(\hat{h}) \in \mathbb{R}^{B \times 128}$$
-    となる
+
+```math
+g = \text{global\_mean\_pool}(\hat{h}) \in \mathbb{R}^{B \times 128}
+```
+
+となる
+
 8. MLP Head（回帰）
-$$
-    128 \rightarrow 512 \rightarrow 256 \rightarrow num\_targets
-$$
 
-    最終出力：
+```math
+128 \rightarrow 512 \rightarrow 256 \rightarrow num\_targets
+```
 
-$$
-    y \in \mathbb{R}^{B \times T}
-$$
+最終出力：
 
+```math
+y \in \mathbb{R}^{B \times T}
+```
 ## 引用
 - **Message-passing neural networks for high-throughput polymer screening**
   
