@@ -184,7 +184,7 @@ NRELデータセットに関しては、3つのGNNモデルを実装し比較し
 
 ![alt text](docs/image/MPNN_gemini.jpg)
 - 入力特徴：原子番号や次数などの離散特徴をEmbeddingして結合
-- メッセージ計算：**結合タイプ（単結合、二重結合など）**ごとに用意された専用の重み行列 $W_{bond\_type}$ を使用
+- メッセージ計算：**結合タイプ（単結合、二重結合など）**ごとに用意された専用の重み行列 $W_{\text{bond-type}}$ を使用
 - 状態更新 : GRU (Gate Recurrent Unit) を使用。時系列データのように、これまでの原子状態を保持しつつ新しいメッセージを取り込む
 - 集約処理：近傍メッセージの単純加算（Sum）
 - Readout : 全ノードを128Dから 1024D に引き上げてから集約。非常にリッチな分子指紋（Fingerprint）を生成
@@ -222,7 +222,7 @@ $$
    - (a) `Message`（エッジごと）
 
 $$
-m_{ij} = W_{\text{bond\_type}} \cdot h_j^{(l)}
+m_{ij} = W_{\text{bond-type}} \cdot h_j^{(l)}
 $$
 
      - 結合タイプ（single or double etc.）ごとに異なる行列を使用
@@ -270,7 +270,7 @@ $$
 7. MLP Head（回帰）
 
 $$
-1024 \rightarrow 512 \rightarrow 256 \rightarrow num\_targets
+1024 \rightarrow 512 \rightarrow 256 \rightarrow \text{num-targets}
 $$
 
 最終出力：
@@ -327,7 +327,7 @@ $$
 7. MLP Head（回帰）
 
 $$
-128 \rightarrow 512 \rightarrow 256 \rightarrow num\_targets
+128 \rightarrow 512 \rightarrow 256 \rightarrow \text{num-targets}
 $$
 
 最終出力：
@@ -399,7 +399,7 @@ $$
 7. Graph poolingによりグラフ表現に変換、今回は`global_mean_pool`なので、
 
 $$
-g = \text{global\_mean\_pool}(\hat{h}) \in \mathbb{R}^{B \times 128}
+g = \text{global-mean-pool}(\hat{h}) \in \mathbb{R}^{B \times 128}
 $$
 
 となる
@@ -407,7 +407,7 @@ $$
 8. MLP Head（回帰）
 
 $$
-128 \rightarrow 512 \rightarrow 256 \rightarrow num\_targets
+128 \rightarrow 512 \rightarrow 256 \rightarrow \text{num-targets}
 $$
 
 最終出力：

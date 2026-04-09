@@ -189,7 +189,7 @@ On the **NREL** dataset we implemented and compared three GNNs. The reference pa
 ![alt text](docs/image/MPNN_gemini.jpg)
 
 - **Inputs:** Discrete features (atomic number, degree, etc.) embedded and concatenated.
-- **Messages:** Bond-type-specific weight matrices $W_{\text{bond\_type}}$ (single, double, …).
+- **Messages:** Bond-type-specific weight matrices $W_{\text{bond-type}}$ (single, double, …).
 - **Update:** GRU—combines past state with new messages like a recurrent cell.
 - **Aggregation:** Sum of neighbor messages.
 - **Readout:** Nodes lifted from 128D to 1024D before pooling—rich molecular fingerprints.
@@ -223,7 +223,7 @@ $$
    - (a) **Message** (per edge):
 
 $$
-m_{ij} = W_{\text{bond\_type}} \cdot h_j^{(l)}
+m_{ij} = W_{\text{bond-type}} \cdot h_j^{(l)}
 $$
 
      $m_{ij} \in \mathbb{R}^{E \times 128}$
@@ -247,7 +247,7 @@ $$
 6. **Global sum pooling** → graph vector $g \in \mathbb{R}^{B \times 128}$
 
 7. **MLP head (regression):**  
-   $1024 \rightarrow 512 \rightarrow 256 \rightarrow \text{num\_targets}$  
+   $1024 \rightarrow 512 \rightarrow 256 \rightarrow \text{num-targets}$  
    Output: $y \in \mathbb{R}^{B \times T}$
 
 ### GCN (Graph Convolutional Network)
@@ -269,7 +269,7 @@ $$
 1. Map 104D → 128D:  
    $h^{(0)} = \text{Linear}(h) \in \mathbb{R}^{N \times 128}$
 
-2. GCNConv on $(h, \text{edge\_index})$: neighborhood of $j$, linear $W h_j$, normalize by $1/\sqrt{d_i d_j}$, aggregate $\sum_j$:
+2. GCNConv on $(h, \text{edge-index})$: neighborhood of $j$, linear $W h_j$, normalize by $1/\sqrt{d_i d_j}$, aggregate $\sum_j$:
 
 $$
 h_i^{(l+1)} = \sum_{j \in \mathcal{N}(i)} \frac{1}{\sqrt{d_i d_j}} W h_j^{(l)}
@@ -279,7 +279,7 @@ $$
 4. Repeat for `num_layers` (e.g. 3).
 5. $\hat{h} = h^{(M)} \in \mathbb{R}^{N \times 128}$
 6. Global sum pooling → $g \in \mathbb{R}^{B \times 128}$
-7. MLP: $128 \rightarrow 512 \rightarrow 256 \rightarrow \text{num\_targets}$, output $y \in \mathbb{R}^{B \times T}$
+7. MLP: $128 \rightarrow 512 \rightarrow 256 \rightarrow \text{num-targets}$, output $y \in \mathbb{R}^{B \times T}$
 
 ### SchNet
 
@@ -307,7 +307,7 @@ $$
    edge_attr = self.distance_expansion(edge_weight)
    ```
 
-3. SchNet interaction blocks take $(h^{(l)}, \text{edge\_index}, \text{edge\_weight}, \text{edge\_attr})$.
+3. SchNet interaction blocks take $(h^{(l)}, \text{edge-index}, \text{edge-weight}, \text{edge-attr})$.
 
    Conceptually:
 
@@ -323,9 +323,9 @@ $$
 6. $\hat{h} = h^{(M)} \in \mathbb{R}^{N \times 128}$
 
 7. Pooling (here `global_mean_pool`):  
-   $g = \text{global\_mean\_pool}(\hat{h}) \in \mathbb{R}^{B \times 128}$
+   $g = \text{global-mean-pool}(\hat{h}) \in \mathbb{R}^{B \times 128}$
 
-8. MLP: $128 \rightarrow 512 \rightarrow 256 \rightarrow \text{num\_targets}$, output $y \in \mathbb{R}^{B \times T}$
+8. MLP: $128 \rightarrow 512 \rightarrow 256 \rightarrow \text{num-targets}$, output $y \in \mathbb{R}^{B \times T}$
 
 ## References
 
